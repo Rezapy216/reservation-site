@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}MyHotel — Book your stay{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <h1 class="display-6 fw-bold text-white">Find your perfect room</h1>
+    <p class="text-white-50 mb-0">Simple booking, clear prices, no hidden fees.</p>
+  </div>
+</section>
+<div class="container search-wrap">
+  <div class="card shadow border-0 p-3">{% include "hotel/_search_form.html" %}</div>
+</div>
+
+<section class="container mt-5">
+  <h2 class="h4 mb-3">Popular rooms</h2>
+  <div class="row g-3">
+    {% for room in featured_rooms %}
+    <div class="col-md-6 col-lg-3">
+      <a href="{% url 'room_detail' room.pk %}" class="text-decoration-none text-dark">
+        <div class="card h-100 room-card">
+          {% if room.image %}<img src="{{ room.image.url }}" class="card-img-top" style="height:160px;object-fit:cover" alt="">
+          {% else %}<div class="placeholder-img" style="height:160px"><i class="bi bi-image"></i></div>{% endif %}
+          <div class="card-body">
+            <h6 class="mb-1">{{ room.name }}</h6>
+            <div class="small text-muted">Up to {{ room.capacity }} guests</div>
+            <div class="mt-2">From <span class="price fs-6">${{ room.price }}</span> / night</div>
+          </div>
+        </div>
+      </a>
+    </div>
+    {% empty %}<p class="text-muted">No rooms yet. Add some from the admin panel.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="container mt-5">
+  <div class="row text-center g-3">
+    <div class="col-md-4"><i class="bi bi-shield-check fs-2 text-primary"></i><h6 class="mt-2">Secure booking</h6><p class="small text-muted">Your details are safe with us.</p></div>
+    <div class="col-md-4"><i class="bi bi-tag fs-2 text-primary"></i><h6 class="mt-2">Best price</h6><p class="small text-muted">What you see is what you pay.</p></div>
+    <div class="col-md-4"><i class="bi bi-x-circle fs-2 text-primary"></i><h6 class="mt-2">Free cancellation</h6><p class="small text-muted">On most bookings, up to 24h before.</p></div>
+  </div>
+</section>
+{% endblock %}

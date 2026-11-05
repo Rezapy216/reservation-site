@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Login — MyHotel{% endblock %}
+{% block content %}
+<div class="container mt-5" style="max-width:420px">
+  <div class="card p-4">
+    <h1 class="h4 mb-3">Login</h1>
+    {% if form.errors %}<div class="alert alert-danger small">Wrong username or password.</div>{% endif %}
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}">
+      <div class="mb-3"><label class="form-label">Username</label>
+        <input type="text" class="form-control" name="username" required></div>
+      <div class="mb-3"><label class="form-label">Password</label>
+        <input type="password" class="form-control" name="password" required></div>
+      <button class="btn btn-primary w-100">Login</button>
+    </form>
+    <div class="small text-center mt-3">New here? <a href="{% url 'register' %}">Create an account</a></div>
+  </div>
+</div>
+{% endblock %}
