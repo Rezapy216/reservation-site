@@ -1,0 +1,19 @@
+<form class="search-box row g-2 align-items-end" method="get" action="{% url 'room_list' %}">
+  <div class="col-lg-3 col-md-6">
+    <label class="form-label small mb-1">Check-in</label>
+    <input type="date" class="form-control js-checkin" name="check_in" value="{{ request.GET.check_in }}" required>
+  </div>
+  <div class="col-lg-3 col-md-6">
+    <label class="form-label small mb-1">Check-out</label>
+    <input type="date" class="form-control js-checkout" name="check_out" value="{{ request.GET.check_out }}" required>
+  </div>
+  <div class="col-lg-3 col-md-6">
+    <label class="form-label small mb-1">Guests</label>
+    <select class="form-select" name="guests">
+      {% for n in "1234" %}<option value="{{ n }}" {% if request.GET.guests == n %}selected{% endif %}>{{ n }} guest{{ n|pluralize }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="col-lg-3 col-md-6">
+    <button class="btn btn-accent w-100" type="submit"><i class="bi bi-search"></i> Search</button>
+  </div>
+</form>

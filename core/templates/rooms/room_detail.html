@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ room.name }} — MyHotel{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <nav aria-label="breadcrumb"><ol class="breadcrumb small">
+    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'room_list' %}">Rooms</a></li>
+    <li class="breadcrumb-item active">{{ room.name }}</li>
+  </ol></nav>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <h1 class="h3">{{ room.name }} <span class="rating-badge ms-2">{{ room.rating|default:"8.5" }}</span></h1>
+      {% if room.image %}<img src="{{ room.image.url }}" class="img-fluid rounded mb-3" alt="{{ room.name }}">
+      {% else %}<div class="placeholder-img rounded mb-3" style="height:320px"><i class="bi bi-image fs-1"></i></div>{% endif %}
+
+      <div class="card p-3 mb-3">
+        <h5>About this room</h5>
+        <p class="mb-0">{{ room.description }}</p>
+      </div>
+      <div class="card p-3">
+        <h5>Facilities</h5>
+        <div class="row small g-2">
+          <div class="col-6 col-md-4"><i class="bi bi-wifi text-success"></i> Free Wi-Fi</div>
+          <div class="col-6 col-md-4"><i class="bi bi-tv text-success"></i> TV</div>
+          <div class="col-6 col-md-4"><i class="bi bi-snow text-success"></i> Air conditioning</div>
+          <div class="col-6 col-md-4"><i class="bi bi-cup-hot text-success"></i> Breakfast</div>
+          <div class="col-6 col-md-4"><i class="bi bi-droplet text-success"></i> Private bathroom</div>
+          <div class="col-6 col-md-4"><i class="bi bi-people text-success"></i> {{ room.capacity }} guests</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Booking card -->
+    <div class="col-lg-4">
+      <div class="card p-3 sticky-card" id="priceCard" data-price="{{ room.price }}">
+        <div class="mb-2"><span class="price">${{ room.price }}</span> <span class="text-muted small">/ night</span></div>
+        <form method="get" action="{% url 'booking_create' room.pk %}">
+          <label class="form-label small mb-1">Check-in</label>
+          <input type="date" class="form-control mb-2 js-checkin" name="check_in" value="{{ request.GET.check_in }}" required>
+          <label class="form-label small mb-1">Check-out</label>
+          <input type="date" class="form-control mb-2 js-checkout" name="check_out" value="{{ request.GET.check_out }}" required>
+          <div class="d-flex justify-content-between border-top pt-2 mb-3">
+            <span><span id="nightsCount">0</span> night(s)</span>
+            <strong id="totalPrice">$0</strong>
+          </div>
+          {% if user.is_authenticated %}
+            <button class="btn btn-primary w-100">Reserve</button>
+          {% else %}
+            <a class="btn btn-primary w-100" href="{% url 'login' %}?next={{ request.path }}">Login to reserve</a>
+            <div class="small text-muted mt-2 text-center">You need an account to book.</div>
+          {% endif %}
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
