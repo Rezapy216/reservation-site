@@ -1,0 +1,22 @@
+:root { --brand: #003b95; --brand-dark: #00265f; --accent: #febb02; }
+
+.site-nav { background: var(--brand); }
+.site-footer { background: var(--brand-dark); color: #cfd8ea; }
+.site-footer a { color: #fff; text-decoration: none; }
+
+.hero { background: linear-gradient(135deg, var(--brand), #0a5ad4); padding: 64px 0 96px; }
+.search-wrap { margin-top: -56px; position: relative; z-index: 2; }
+.search-box { border: 3px solid var(--accent); border-radius: .5rem; padding: .75rem; background: #fff; }
+.btn-accent { background: var(--brand); color: #fff; }
+.btn-accent:hover { background: var(--brand-dark); color: #fff; }
+.btn-primary { --bs-btn-bg: #0071c2; --bs-btn-border-color: #0071c2; --bs-btn-hover-bg: var(--brand); --bs-btn-hover-border-color: var(--brand); }
+
+.room-card { border: 1px solid #dee2e6; overflow: hidden; transition: box-shadow .15s; }
+.room-card:hover { box-shadow: 0 4px 14px rgba(0, 0, 0, .1); }
+.room-thumb { width: 100%; height: 100%; min-height: 190px; object-fit: cover; display: block; }
+.placeholder-img { background: #e9ecef; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+
+.price { font-size: 1.4rem; font-weight: 700; color: #1a1a1a; }
+.rating-badge { display: inline-block; background: var(--brand); color: #fff; font-weight: 700; padding: .15rem .5rem; border-radius: .4rem .4rem .4rem 0; font-size: .9rem; }
+.sticky-card { position: sticky; top: 16px; border: 2px solid var(--accent); }
+

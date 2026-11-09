@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Rooms{% endblock %}
+{% block content %}
+<div class="bg-primary-subtle py-3 border-bottom">
+  <div class="container"><div class="card border-0 p-3">{% include "rooms/_search_form.html" %}</div></div>
+</div>
+
+<div class="container mt-4">
+  <div class="row">
+    <!-- Filters (sends GET; handle in your view with request.GET) -->
+    <aside class="col-lg-3 mb-4">
+      <form method="get" class="card p-3">
+        <input type="hidden" name="check_in" value="{{ request.GET.check_in }}">
+        <input type="hidden" name="check_out" value="{{ request.GET.check_out }}">
+        <input type="hidden" name="guests" value="{{ request.GET.guests }}">
+        <h6>Filter by</h6><hr class="my-2">
+        <label class="form-label small">Max price / night</label>
+        <input type="number" class="form-control form-control-sm mb-3" name="max_price" value="{{ request.GET.max_price }}" placeholder="e.g. 150">
+        <label class="form-label small">Room type</label>
+        <select class="form-select form-select-sm mb-3" name="type">
+          <option value="">All</option>
+          {% for t in room_types %}<option value="{{ t.pk }}" {% if request.GET.type == t.pk|stringformat:"s" %}selected{% endif %}>{{ t.name }}</option>{% endfor %}
+        </select>
+        <label class="form-label small">Sort by</label>
+        <select class="form-select form-select-sm mb-3" name="sort">
+          <option value="price">Price (low to high)</option>
+          <option value="-price">Price (high to low)</option>
+        </select>
+        <button class="btn btn-primary btn-sm">Apply</button>
+      </form>
+    </aside>
+
+    <section class="col-lg-9">
+      <h1 class="h5 mb-3">{{ rooms|length }} room{{ rooms|length|pluralize }} found</h1>
+      {% for room in rooms %}
+          {% include "rooms/_room_card.html" with room=room only %}
+      {% empty %}<div class="alert alert-warning">No rooms match your search.</div>
+      {% endfor %}
+
+      {% if is_paginated %}
+      <nav><ul class="pagination">
+        {% if page_obj.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>{% endif %}
+        <li class="page-item disabled"><span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+        {% if page_obj.has_next %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>{% endif %}
+      </ul></nav>
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}

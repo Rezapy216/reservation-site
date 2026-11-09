@@ -8,6 +8,8 @@ class CustomUserAdmin(UserAdmin):
     list_filter = ('phone', 'name', 'is_staff', 'is_active', 'is_host')
     searching_fields = ('phone',)
     ordering = ('phone', 'is_host')
+    filter_horizontal = ('groups', 'user_permissions')
+
     fieldsets = (
         ('authentication', {
             'fields': (
@@ -16,7 +18,7 @@ class CustomUserAdmin(UserAdmin):
         }),
         ("Permissions", {
             "fields": (
-            "is_host", "is_active", "is_staff", "is_superuser",
+            "is_host", "is_active", "is_staff", "is_superuser", "user_permissions", "groups",
         )}),
         
         ("Important dates", {"fields": ("date_joined",)}),

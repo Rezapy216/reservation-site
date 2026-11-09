@@ -1,5 +1,4 @@
 from django.db import models
-from accounts.models import User
 from core import settings
 
 
@@ -8,16 +7,18 @@ class Room(models.Model):
     amenities = models.ManyToManyField("Amenity") 
     pay_per_night = models.DecimalField()
     permitted_guests = models.DecimalField()
+    name = models.CharField(max_length=300, default='unnamed')
     
     def __str__(self):
-        return f'{self.owner.name} ,{self.owner}'
+        return f'{self.owner.name} ,{self.name}'
     
     
 class Amenity(models.Model):
     name = models.CharField(max_length=80)
     
     def __str__(self):
-        return self.name
+           return f'{self.name}'
+
     
 class Picture(models.Model):
     image = models.ImageField(upload_to="rooms/", null=True, blank=True)

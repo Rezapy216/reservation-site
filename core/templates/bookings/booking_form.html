@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}Confirm booking — MyHotel{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1 class="h4 mb-3">Complete your booking</h1>
+  <div class="row g-4">
+    <!-- ستون فرم -->
+    <div class="col-lg-8">
+      <form method="post" class="card p-4 shadow-sm">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger mb-3">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        <!-- بخش تاریخ ورود و خروج -->
+        <h5 class="mb-3">Reservation dates</h5>
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <label class="form-label">Check-in date</label>
+            <input 
+              type="date" 
+              class="form-control" 
+              id="checkin-date" 
+              name="date_in" 
+              value="{{ form.date_in.value|default:'' }}" 
+              required
+            >
+            {% if form.date_in.errors %}
+              <small class="text-danger">{{ form.date_in.errors }}</small>
+            {% endif %}
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Check-out date</label>
+            <input 
+              type="date" 
+              class="form-control" 
+              id="checkout-date" 
+              name="date_out" 
+              value="{{ form.date_out.value|default:'' }}" 
+              required
+            >
+            {% if form.date_out.errors %}
+              <small class="text-danger">{{ form.date_out.errors }}</small>
+            {% endif %}
+          </div>
+        </div>
+
+        <hr class="my-3">
+
+        <!-- مشخصات مسافر -->
+        <h5 class="mb-3">Guest details</h5>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Full name</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              value="{{ user.get_full_name|default:user.name }}" 
+              readonly
+            >
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Number of guests</label>
+            <input 
+              type="number" 
+              name="number_of_people" 
+              class="form-control" 
+              min="1" 
+              max="{{ room.permitted_guests }}" 
+              value="{{ form.number_of_people.value|default:1 }}" 
+              required
+            >
+            {% if form.number_of_people.errors %}
+              <div class="text-danger small mt-1">{{ form.number_of_people.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Special requests (optional)</label>
+            <textarea class="form-control" name="notes" rows="3"></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-4 align-self-start">Confirm booking</button>
+      </form>
+    </div>
+
+    <!-- ستون خلاصه اطلاعات اتاق -->
+    <div class="col-lg-4">
+      <div class="card p-3 shadow-sm">
+        <h6>{{ room.name }}</h6>
+        
+        <div id="stay-dates" class="small text-muted mb-2 d-none">
+          <span id="display-in"></span> → <span id="display-out"></span>
+        </div>
+
+        <div class="d-flex justify-content-between mb-2">
+          <span id="rate-summary">${{ room.pay_per_night }} per night</span>
+          <span id="subtotal-price">${{ room.pay_per_night }}</span>
+        </div>
+
+        <hr>
+
+        <div class="d-flex justify-content-between fw-bold text-primary fs-5">
+          <span>Total</span>
+          <span id="total-price">${{ room.pay_per_night }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const checkinInput = document.getElementById('checkin-date');
+    const checkoutInput = document.getElementById('checkout-date');
+    
+    const displayDates = document.getElementById('stay-dates');
+    const displayIn = document.getElementById('display-in');
+    const displayOut = document.getElementById('display-out');
+    
+    const rateSummary = document.getElementById('rate-summary');
+    const subtotalPrice = document.getElementById('subtotal-price');
+    const totalPrice = document.getElementById('total-price');
+
+    const pricePerNight = {{ room.pay_per_night }};
+
+    function updateCalculations() {
+        const inVal = checkinInput.value;
+        const outVal = checkoutInput.value;
+
+        if (inVal && outVal) {
+            const dateIn = new Date(inVal);
+            const dateOut = new Date(outVal);
+
+            const diffTime = dateOut - dateIn;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays > 0) {
+                const total = diffDays * pricePerNight;
+                const formattedTotal = total.toLocaleString();
+
+                rateSummary.textContent = `$${pricePerNight} × ${diffDays} night${diffDays > 1 ? 's' : ''}`;
+                subtotalPrice.textContent = `$${formattedTotal}`;
+                totalPrice.textContent = `$${formattedTotal}`;
+
+                displayIn.textContent = inVal;
+                displayOut.textContent = outVal;
+                displayDates.classList.remove('d-none');
+            } else {
+                rateSummary.textContent = "Invalid date range";
+                subtotalPrice.textContent = "$0";
+                totalPrice.textContent = "$0";
+            }
+        }
+    }
+
+    checkinInput.addEventListener('change', updateCalculations);
+    checkoutInput.addEventListener('change', updateCalculations);
+
+    // بررسی اولیه در صورت وجود مقدار پیش‌فرض
+    updateCalculations();
+});
+</script>
+{% endblock %}
