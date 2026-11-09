@@ -7,17 +7,17 @@ class Room(models.Model):
     amenities = models.ManyToManyField("Amenity") 
     pay_per_night = models.DecimalField()
     permitted_guests = models.DecimalField()
+    name = models.CharField(max_length=300, default='unnamed')
     
     def __str__(self):
-        return f'{self.owner.name} ,{self.owner}'
+        return f'{self.owner.name} ,{self.name}'
     
     
 class Amenity(models.Model):
     name = models.CharField(max_length=80)
     
     def __str__(self):
-           def __str__(self):
-            return f"Room {self.id} - {self.owner.name}"
+           return f'{self.name}'
 
     
 class Picture(models.Model):

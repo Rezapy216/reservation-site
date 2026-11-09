@@ -1,4 +1,4 @@
-<form class="search-box row g-2 align-items-end" method="get" action="{% url 'room_list' %}">
+{% comment %} <form class="search-box row g-2 align-items-end" method="get" action="{% url 'room_list' %}"> {% endcomment %}
   <div class="col-lg-3 col-md-6">
     <label class="form-label small mb-1">Check-in</label>
     <input type="date" class="form-control js-checkin" name="check_in" value="{{ request.GET.check_in }}" required>

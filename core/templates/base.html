@@ -13,32 +13,32 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark site-nav">
   <div class="container">
-    <a class="navbar-brand fw-bold" href="{% url 'home' %}"><i class="bi bi-building"></i> MyHotel</a>
+    <a class="navbar-brand fw-bold" href="{% url 'rooms:home' %}"><i class="bi bi-building"></i> MyHotel</a>
     <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu"><span class="navbar-toggler-icon"></span></button>
     <div class="collapse navbar-collapse" id="menu">
       <ul class="navbar-nav me-auto">
-        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'room_list' %}">Rooms</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'rooms:home' %}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'rooms:room_list' %}">Rooms</a></li>
       </ul>
       <ul class="navbar-nav align-items-lg-center gap-lg-2">
         {% if user.is_authenticated %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-person-circle"></i> {{ user.username }}</a>
             <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="{% url 'my_bookings' %}">My bookings</a></li>
+              {% comment %} <li><a class="dropdown-item" href="{% url 'my_bookings' %}">My bookings</a></li> {% endcomment %}
               {% if user.is_staff %}<li><a class="dropdown-item" href="/admin/">Admin panel</a></li>{% endif %}
               <li><hr class="dropdown-divider"></li>
               <li>
                 <!-- Django 5+: logout must be POST -->
-                <form method="post" action="{% url 'logout' %}">{% csrf_token %}
+                {% comment %} <form method="post" action="{% url 'logout' %}">{% csrf_token %} {% endcomment %}
                   <button class="dropdown-item" type="submit">Logout</button>
                 </form>
               </li>
             </ul>
           </li>
         {% else %}
-          <li class="nav-item"><a class="btn btn-outline-light btn-sm" href="{% url 'login' %}">Login</a></li>
-          <li class="nav-item"><a class="btn btn-light btn-sm" href="{% url 'register' %}">Register</a></li>
+          {% comment %} <li class="nav-item"><a class="btn btn-outline-light btn-sm" href="{% url 'login' %}">Login</a></li> {% endcomment %}
+          {% comment %} <li class="nav-item"><a class="btn btn-light btn-sm" href="{% url 'register' %}">Register</a></li> {% endcomment %}
         {% endif %}
       </ul>
     </div>
@@ -60,7 +60,7 @@
 <footer class="site-footer mt-5 py-4">
   <div class="container d-flex flex-wrap justify-content-between small">
     <span>&copy; 2026 MyHotel — practice project</span>
-    <span><a href="{% url 'room_list' %}">Rooms</a> · <a href="#">Contact</a> · <a href="#">Terms</a></span>
+    {% comment %} <span><a href="{% url 'room_list' %}">Rooms</a> · <a href="#">Contact</a> · <a href="#">Terms</a></span> {% endcomment %}
   </div>
 </footer>
 

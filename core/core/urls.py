@@ -19,12 +19,15 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 import rooms, accounts, bookings
+import debug_toolbar
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('rooms/', include('rooms.urls')),
+    path('', include('rooms.urls')),
+    path('__debug__/', include(debug_toolbar.urls)),
+
     # path('accounts/', include('accounts.urls')),
-    # path('bookings/', include('bookings.urls')),
+    path('bookings/', include('bookings.urls')),
 ]
 
 # serving statics and media for developments

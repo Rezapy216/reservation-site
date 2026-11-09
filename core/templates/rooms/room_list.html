@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% block title %}Rooms — MyHotel{% endblock %}
+{% block title %}Rooms{% endblock %}
 {% block content %}
 <div class="bg-primary-subtle py-3 border-bottom">
-  <div class="container"><div class="card border-0 p-3">{% include "hotel/_search_form.html" %}</div></div>
+  <div class="container"><div class="card border-0 p-3">{% include "rooms/_search_form.html" %}</div></div>
 </div>
 
 <div class="container mt-4">
@@ -32,8 +32,10 @@
 
     <section class="col-lg-9">
       <h1 class="h5 mb-3">{{ rooms|length }} room{{ rooms|length|pluralize }} found</h1>
-      {% for room in rooms %}{% include "hotel/_room_card.html" %}
-      {% empty %}<div class="alert alert-warning">No rooms match your search.</div>{% endfor %}
+      {% for room in rooms %}
+          {% include "rooms/_room_card.html" with room=room only %}
+      {% empty %}<div class="alert alert-warning">No rooms match your search.</div>
+      {% endfor %}
 
       {% if is_paginated %}
       <nav><ul class="pagination">

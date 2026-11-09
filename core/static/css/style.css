@@ -19,3 +19,4 @@
 .price { font-size: 1.4rem; font-weight: 700; color: #1a1a1a; }
 .rating-badge { display: inline-block; background: var(--brand); color: #fff; font-weight: 700; padding: .15rem .5rem; border-radius: .4rem .4rem .4rem 0; font-size: .9rem; }
 .sticky-card { position: sticky; top: 16px; border: 2px solid var(--accent); }
+
