@@ -6,42 +6,55 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('bookings', '0002_remove_booking_total_price'),
+        ("bookings", "0002_remove_booking_total_price"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='booking',
-            options={'ordering': ['-created_date']},
+            name="booking",
+            options={"ordering": ["-created_date"]},
         ),
         migrations.RenameField(
-            model_name='booking',
-            old_name='created_time',
-            new_name='created_date',
+            model_name="booking",
+            old_name="created_time",
+            new_name="created_date",
         ),
         migrations.RemoveField(
-            model_name='booking',
-            name='pending_exp_time',
+            model_name="booking",
+            name="pending_exp_time",
         ),
         migrations.RemoveField(
-            model_name='booking',
-            name='price_per_night',
+            model_name="booking",
+            name="price_per_night",
         ),
         migrations.AddField(
-            model_name='booking',
-            name='pay_per_night',
-            field=models.DecimalField(decimal_places=2, default=100, editable=False, max_digits=12),
+            model_name="booking",
+            name="pay_per_night",
+            field=models.DecimalField(
+                decimal_places=2, default=100, editable=False, max_digits=12
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='booking',
-            name='total_price',
-            field=models.DecimalField(decimal_places=2, default=1, editable=False, max_digits=12),
+            model_name="booking",
+            name="total_price",
+            field=models.DecimalField(
+                decimal_places=2, default=1, editable=False, max_digits=12
+            ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='booking',
-            name='status',
-            field=models.CharField(choices=[('pending', 'Pending'), ('confirmed', 'Confirmed'), ('expired', 'Expired'), ('cancelled', 'Cancelled')], default='pending', max_length=12),
+            model_name="booking",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("pending", "Pending"),
+                    ("confirmed", "Confirmed"),
+                    ("expired", "Expired"),
+                    ("cancelled", "Cancelled"),
+                ],
+                default="pending",
+                max_length=12,
+            ),
         ),
     ]

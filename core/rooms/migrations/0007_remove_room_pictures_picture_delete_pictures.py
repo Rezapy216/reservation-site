@@ -7,24 +7,41 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rooms', '0006_alter_room_permitted_guests'),
+        ("rooms", "0006_alter_room_permitted_guests"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='room',
-            name='pictures',
+            model_name="room",
+            name="pictures",
         ),
         migrations.CreateModel(
-            name='Picture',
+            name="Picture",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('pictures', models.ImageField(blank=True, null=True, upload_to='')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('room', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='pictures', to='rooms.room')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("pictures", models.ImageField(blank=True, null=True, upload_to="")),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "room",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="pictures",
+                        to="rooms.room",
+                    ),
+                ),
             ],
         ),
         migrations.DeleteModel(
-            name='Pictures',
+            name="Pictures",
         ),
     ]
