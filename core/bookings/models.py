@@ -25,10 +25,14 @@ class Booking(models.Model):
     )
     date_in = models.DateField()
     date_out = models.DateField()
-    number_of_people = models.PositiveSmallIntegerField(validators=[MinValueValidator(1)])
+    number_of_people = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1)]
+    )
     pay_per_night = models.DecimalField(max_digits=12, decimal_places=2, editable=False)
     total_price = models.DecimalField(max_digits=12, decimal_places=2, editable=False)
-    status = models.CharField(max_length=12, choices=Status.choices, default=Status.PENDING)
+    status = models.CharField(
+        max_length=12, choices=Status.choices, default=Status.PENDING
+    )
     created_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -62,7 +66,6 @@ class Booking(models.Model):
         if self.number_of_people and self.number_of_people > self.room.permitted_guests:
             raise ValidationError("number of people exceeds the room capacity")
 
-        
         if self.status not in (self.Status.PENDING, self.Status.CONFIRMED):
             return
 
@@ -86,7 +89,7 @@ class Booking(models.Model):
 
     def save(self, *args, **kwargs):
         if self._state.adding:
-            self.pay_per_night = self.room.pay_per_night 
+            self.pay_per_night = self.room.pay_per_night
         if self.date_in and self.date_out:
             self.total_price = self.nights * self.pay_per_night
         self.full_clean()

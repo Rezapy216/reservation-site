@@ -7,13 +7,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rooms', '0004_alter_room_amenity'),
+        ("rooms", "0004_alter_room_amenity"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='room',
-            name='pictures',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='rooms.pictures'),
+            model_name="room",
+            name="pictures",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="rooms.pictures",
+            ),
         ),
     ]

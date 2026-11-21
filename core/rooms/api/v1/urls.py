@@ -1,5 +1,8 @@
-from django.urls import path
 from . import views
-urlpatterns = [
-    path("test-api/", views.api_test)
-]
+from rest_framework.routers import DefaultRouter
+
+app_name = 'api-v1'
+
+router = DefaultRouter()
+router.register("room", views.RoomViewset, basename="room")
+urlpatterns = router.urls
