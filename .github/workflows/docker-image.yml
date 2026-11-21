@@ -2,9 +2,9 @@ name: Django Project Test and Deploy
 
 on:
   push:
-    branches: [ "develoap" ]
+    branches: [ "develop" ]
   pull_request:
-    branches: [ "develoap" ]
+    branches: [ "develop" ]
 
 jobs:
 
