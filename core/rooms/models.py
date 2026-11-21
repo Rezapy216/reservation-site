@@ -14,6 +14,9 @@ class Room(models.Model):
     )
     created_date = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ["id"]
+
     def __str__(self):
         return f"{self.owner.name} ,{self.name}"
 
