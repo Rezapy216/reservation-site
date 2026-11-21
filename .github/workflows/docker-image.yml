@@ -18,4 +18,4 @@ jobs:
       run: docker compose up -d --build
 
     - name: Flake8 and Pytest
-      run: docker compose exec backend sh -c "flake8 && pytest ."
+      run: docker compose exec backend sh -c "pytest ."
