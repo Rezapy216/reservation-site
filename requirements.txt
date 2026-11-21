@@ -15,3 +15,4 @@ djangorestframework-simplejwt
 # refactoring and tests
 black
 flake8
+pytest
