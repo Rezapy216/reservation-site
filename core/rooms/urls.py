@@ -6,5 +6,5 @@ urlpatterns = [
     path("", views.HomeView.as_view(), name="home"),
     path("rooms-list/", views.RoomsListView.as_view(), name="room_list"),
     path("room-detail/<int:pk>/", views.RoomDetailView.as_view(), name="room_detail"),
-    path("api/v1/", include("rooms.api.v1.urls")),
+    path("api/v1/", include("rooms.api.v1.urls", "api-v1")),
 ]

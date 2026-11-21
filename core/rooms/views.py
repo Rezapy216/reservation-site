@@ -1,6 +1,9 @@
 from django.views.generic.base import TemplateView
 from django.views.generic import ListView, DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from .models import Room
+
 
 
 class HomeView(TemplateView):
@@ -26,5 +29,5 @@ class RoomsListView(ListView):
     ordering = "-pay_per_night"
 
 
-class RoomDetailView(DetailView):
+class RoomDetailView(LoginRequiredMixin, DetailView):
     model = Room
