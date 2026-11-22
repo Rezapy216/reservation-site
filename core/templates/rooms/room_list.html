@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Rooms{% endblock %}
 {% block content %}
 <div class="bg-primary-subtle py-3 border-bottom">
@@ -6,45 +7,143 @@
 </div>
 
 <div class="container mt-4">
+  <div id="apiMessages"></div>
   <div class="row">
-    <!-- Filters (sends GET; handle in your view with request.GET) -->
+    <!-- Filters: handled by jQuery, no page reload -->
     <aside class="col-lg-3 mb-4">
-      <form method="get" class="card p-3">
-        <input type="hidden" name="check_in" value="{{ request.GET.check_in }}">
-        <input type="hidden" name="check_out" value="{{ request.GET.check_out }}">
-        <input type="hidden" name="guests" value="{{ request.GET.guests }}">
+      <form method="get" class="card p-3" id="filterForm">
         <h6>Filter by</h6><hr class="my-2">
+        <label class="form-label small">Search</label>
+        <input type="text" class="form-control form-control-sm mb-3" name="search" placeholder="Room name">
+        <label class="form-label small">Guests</label>
+        <input type="number" min="1" class="form-control form-control-sm mb-3" name="guests">
         <label class="form-label small">Max price / night</label>
-        <input type="number" class="form-control form-control-sm mb-3" name="max_price" value="{{ request.GET.max_price }}" placeholder="e.g. 150">
-        <label class="form-label small">Room type</label>
-        <select class="form-select form-select-sm mb-3" name="type">
-          <option value="">All</option>
-          {% for t in room_types %}<option value="{{ t.pk }}" {% if request.GET.type == t.pk|stringformat:"s" %}selected{% endif %}>{{ t.name }}</option>{% endfor %}
-        </select>
+        <input type="number" class="form-control form-control-sm mb-3" name="max_price" placeholder="e.g. 150">
         <label class="form-label small">Sort by</label>
         <select class="form-select form-select-sm mb-3" name="sort">
-          <option value="price">Price (low to high)</option>
-          <option value="-price">Price (high to low)</option>
+          <option value="">Default</option>
+          <option value="pay_per_night">Price (low to high)</option>
+          <option value="-pay_per_night">Price (high to low)</option>
         </select>
         <button class="btn btn-primary btn-sm">Apply</button>
       </form>
     </aside>
 
     <section class="col-lg-9">
-      <h1 class="h5 mb-3">{{ rooms|length }} room{{ rooms|length|pluralize }} found</h1>
-      {% for room in rooms %}
-          {% include "rooms/_room_card.html" with room=room only %}
-      {% empty %}<div class="alert alert-warning">No rooms match your search.</div>
-      {% endfor %}
-
-      {% if is_paginated %}
-      <nav><ul class="pagination">
-        {% if page_obj.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>{% endif %}
-        <li class="page-item disabled"><span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
-        {% if page_obj.has_next %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>{% endif %}
-      </ul></nav>
-      {% endif %}
+      <h1 class="h5 mb-3" id="roomCount"></h1>
+      <div id="roomList"></div>
+      <nav><ul class="pagination" id="pagination"></ul></nav>
     </section>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="{% static 'js/api.js' %}"></script>
+<script>
+$(function () {
+  // ---- API (DRF router, JWT-protected; api.js adds the Bearer header + token refresh) ----
+  const ROOMS_URL = "/api/v1/room/";
+  const DETAIL_URL = id => `/room-detail/${id}/`;   // room detail page (change if yours differs)
+
+  const urlParams = new URLSearchParams(window.location.search);
+  let page = 1;
+  const esc = s => $("<div>").text(s ?? "").html();
+
+  // Pre-fill filters from the URL
+  $("[name=guests]").val(urlParams.get("guests") || "");
+  $("[name=max_price]").val(urlParams.get("max_price") || "");
+  $("[name=search]").val(urlParams.get("search") || "");
+  if (urlParams.get("sort")) $("[name=sort]").val(urlParams.get("sort"));
+
+  function showError(xhr) {
+    if (xhr.status === 401) {
+      location.href = "{% url 'login' %}?next=" + encodeURIComponent(location.pathname + location.search);
+      return;
+    }
+    const msg = xhr.status === 403 ? "You do not have permission to view rooms."
+                                   : "Failed to load rooms. Please try again.";
+    $("#roomList").html(`<div class="alert alert-danger">${msg}</div>`);
+  }
+
+  function roomCard(r) {
+    // API has no pictures yet: shows them automatically if you add `pictures` to RoomSerializer
+    const firstPic = (r.pictures || []).find(p => p.image);
+    const img = firstPic
+      ? `<img src="${esc(firstPic.image)}" class="room-thumb w-100" alt="${esc(r.name)}">`
+      : `<div class="room-thumb placeholder-img"><i class="bi bi-image"></i></div>`;
+    const amenities = (r.amenities || [])
+      .map(a => `<span class="badge text-bg-light border me-1">${esc(a.name)}</span>`).join("");
+    return `
+      <div class="card mb-3 p-3">
+        <div class="row g-3">
+          <div class="col-md-4">${img}</div>
+          <div class="col-md-8">
+            <h5><a href="${DETAIL_URL(r.id)}" class="text-decoration-none">${esc(r.name)}</a></h5>
+            <p class="small text-muted mb-1"><i class="bi bi-people"></i> ${esc(r.permitted_guests)} guests
+              · <i class="bi bi-person"></i> ${esc(r.owner_name)}</p>
+            <div class="mb-2">${amenities}</div>
+            <p class="fw-bold mb-2">$${esc(r.pay_per_night)} <span class="small text-muted fw-normal">/ night</span></p>
+            <a href="${DETAIL_URL(r.id)}" class="btn btn-primary btn-sm">View</a>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function renderPagination(totalPages) {
+    const $p = $("#pagination").empty();
+    if (!totalPages || totalPages <= 1) return;
+    $p.append(`<li class="page-item ${page <= 1 ? "disabled" : ""}"><a class="page-link" href="#" data-page="${page - 1}">Previous</a></li>`);
+    $p.append(`<li class="page-item disabled"><span class="page-link">${page} / ${totalPages}</span></li>`);
+    $p.append(`<li class="page-item ${page >= totalPages ? "disabled" : ""}"><a class="page-link" href="#" data-page="${page + 1}">Next</a></li>`);
+  }
+
+  function loadRooms() {
+    const query = {
+      search: $("[name=search]").val(),
+      permitted_guests: $("[name=guests]").val(),
+      ordering: $("[name=sort]").val(),
+      page: page
+    };
+    Object.keys(query).forEach(k => query[k] === "" && delete query[k]);
+
+    $("#roomList").html('<div class="text-center py-4">Loading...</div>');
+
+    ReservationAPI.request({ url: ROOMS_URL, data: query })
+      .done(data => {
+        let rooms = data.results || [];
+        // API has no max_price filter -> applied to the current page only
+        const max = parseFloat($("[name=max_price]").val());
+        if (!isNaN(max)) rooms = rooms.filter(r => parseFloat(r.pay_per_night) <= max);
+
+        const count = data.total_objects ?? rooms.length;
+        $("#roomCount").text(`${count} room${count === 1 ? "" : "s"} found`);
+        $("#roomList").html(
+          rooms.length
+            ? rooms.map(roomCard).join("")
+            : '<div class="alert alert-warning">No rooms match your search.</div>'
+        );
+        renderPagination(data.total_pages);
+      })
+      .fail(showError);
+  }
+
+  $("#filterForm").on("submit", function (e) {
+    e.preventDefault();
+    page = 1;
+    loadRooms();
+  });
+
+  $("#pagination").on("click", "a[data-page]", function (e) {
+    e.preventDefault();
+    if ($(this).parent().hasClass("disabled")) return;
+    page = Number($(this).data("page"));
+    loadRooms();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  loadRooms();
+});
+</script>
 {% endblock %}

@@ -20,7 +20,7 @@
       <h5 class="mb-1">
         <a
           class="text-decoration-none"
-          href="{% url 'rooms:room_detail' room.id %}"
+          href="{% url 'rooms:room-detail' room.id %}"
           >{{ room.name }}</a
         >
       </h5>
@@ -48,7 +48,7 @@
         <div class="price">${{ room.pay_per_night }}</div>
         
         <a
-          href="{% url 'rooms:room_detail' room.id %}{% if request.GET.check_in %}?check_in={{ request.GET.check_in }}&check_out={{ request.GET.check_out }}{% endif %}"
+          href="{% url 'rooms:room-detail' room.id %}{% if request.GET.check_in %}?check_in={{ request.GET.check_in }}&check_out={{ request.GET.check_out }}{% endif %}"
           class="btn btn-primary btn-sm mt-2"
           >See availability</a
         >

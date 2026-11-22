@@ -16,7 +16,7 @@
   <div class="row g-3">
     {% for room in rooms %}
     <div class="col-md-6 col-lg-3">
-      <a href="{% url 'rooms:room_detail' room.pk %}" class="text-decoration-none text-dark">
+      <a href="{% url 'rooms:room-detail' room.pk %}" class="text-decoration-none text-dark">
         {% if room.pictures.exists %}
           <img
             src="{{ room.pictures.first.image.url }}"
