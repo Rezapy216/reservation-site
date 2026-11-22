@@ -16,3 +16,4 @@ djangorestframework-simplejwt
 black
 flake8
 pytest
+faker
