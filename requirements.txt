@@ -12,8 +12,17 @@ django-filter
 drf-yasg[validation]
 djangorestframework-simplejwt
 
+# email third party modules
+django-mail-templated
+
+
 # refactoring and tests
 black
 flake8
 pytest
 faker
+
+# background process and cache
+celery
+redis
+django-redis
