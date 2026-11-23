@@ -46,7 +46,7 @@ class CustomAuthTokenSerializer(serializers.Serializer):
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-
+    
     def validate(self, attrs):
 
         validated_data = super().validate(attrs)
