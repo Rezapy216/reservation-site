@@ -10,7 +10,7 @@ from ...models import Room
 class RoomViewset(viewsets.ModelViewSet):
     queryset = Room.objects.select_related("owner").prefetch_related("amenities").all()
     serializer_class = RoomSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly]
     pagination_class = DefaultPagination
     filter_backends = [
         DjangoFilterBackend,
