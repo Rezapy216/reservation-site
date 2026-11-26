@@ -5,9 +5,9 @@ from .models import User
 
 class CustomUserAdmin(UserAdmin):
     model = User
-    list_display = ("phone", "name", "is_staff", "is_active", "is_host")
-    list_filter = ("phone", "name", "is_staff", "is_active", "is_host")
-    searching_fields = ("phone",)
+    list_display = ("phone", "is_verified", "is_staff", "is_active", "is_host")
+    list_filter = ("phone", "is_verified", "is_staff", "is_active", "is_host")
+    searching_fields = ("phone", "email")
     ordering = ("phone", "is_host")
     filter_horizontal = ("groups", "user_permissions")
 
@@ -15,7 +15,7 @@ class CustomUserAdmin(UserAdmin):
         (
             "authentication",
             {
-                "fields": ("phone", "name", "password"),
+                "fields": ("phone", "name", "email", "password"),
             },
         ),
         (
