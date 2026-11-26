@@ -59,7 +59,7 @@ $(function () {
 
   function showError(xhr) {
     if (xhr.status === 401) {
-      location.href = "{% url 'login' %}?next=" + encodeURIComponent(location.pathname + location.search);
+      location.href = "{% url 'accounts:login' %}?next=" + encodeURIComponent(location.pathname + location.search);
       return;
     }
     const msg = xhr.status === 403 ? "You do not have permission to view rooms."
