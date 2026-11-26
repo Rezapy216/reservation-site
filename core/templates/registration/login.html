@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Login — MyHotel{% endblock %}
+{% block content %}
+<div class="container mt-5" style="max-width:420px">
+  <div class="card p-4">
+    <h1 class="h4 mb-3">ورود</h1>
+    <div id="apiMessages" class="alert alert-danger small d-none"></div>
+    <form id="loginForm">
+      <div class="mb-3"><label class="form-label">شماره موبایل</label>
+        <input type="text" class="form-control" name="phone" required></div>
+      <div class="mb-3"><label class="form-label">رمز عبور</label>
+        <input type="password" class="form-control" name="password" required></div>
+      <button type="submit" class="btn btn-primary w-100">ورود</button>
+    </form>
+    <div class="small text-center mt-3">حساب ندارید؟ <a href="{% url 'accounts:register' %}">ثبت‌نام</a></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// if logged in it will redirect to home page
+if (localStorage.getItem('rs_access')) {
+  window.location.href = '/';
+}
+</script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+$(function () {
+  $('#loginForm').on('submit', function (e) {
+    e.preventDefault();
+    var $msg = $('#apiMessages').addClass('d-none').text('');
+
+    $.ajax({
+      url: '/accounts/api/v1/jwt/create/',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        phone: $('input[name=phone]').val(),
+        password: $('input[name=password]').val()
+      })
+    })
+    .done(function (res) {
+      // توکن را نگه می‌داریم؛ base.html از همین کلیدها استفاده می‌کند
+      localStorage.setItem('rs_access', res.access);
+      localStorage.setItem('rs_refresh', res.refresh);
+      localStorage.setItem('rs_user', $('input[name=phone]').val());
+      window.location.href = '/';
+    })
+    .fail(function (xhr) {
+      var text = 'شماره یا رمز اشتباه است.';
+      if (xhr.status === 0) text = 'ارتباط با سرور برقرار نشد.';
+      $msg.text(text).removeClass('d-none');
+    });
+  });
+});
+</script>
+{% endblock %}
