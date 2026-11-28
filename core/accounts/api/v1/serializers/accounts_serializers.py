@@ -15,6 +15,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             "phone",
+            "email",
             "name",
             "password",
             "confirm_password",
