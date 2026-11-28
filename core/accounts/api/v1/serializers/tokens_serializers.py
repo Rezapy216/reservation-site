@@ -10,6 +10,8 @@ User = get_user_model()
 
 class CustomAuthTokenSerializer(serializers.Serializer):
     phone = serializers.CharField(label=_("Phone"), write_only=True)
+    email = serializers.CharField(label=_("Email"), write_only=True)
+    
     password = serializers.CharField(
         label=_("Password"),
         style={"input_type": "password"},
@@ -19,7 +21,7 @@ class CustomAuthTokenSerializer(serializers.Serializer):
     token = serializers.CharField(label=_("Token"), read_only=True)
 
     def validate(self, attrs):
-        username = attrs.get("phone")
+        username = attrs.get("email")
         password = attrs.get("password")
 
         if username and password:
@@ -51,6 +53,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         validated_data = super().validate(attrs)
         validated_data["phone"] = self.user.phone
+        validated_data["email"] = self.user.email
         validated_data["user"] = self.user.id
 
         return validated_data
