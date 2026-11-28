@@ -12,4 +12,5 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "name", "phone")
+        fields = ("id", "name", "phone", "is_verified")
+        read_only_fields = ("is_verified",)
