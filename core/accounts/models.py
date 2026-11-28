@@ -6,12 +6,12 @@ from django.contrib.auth.models import (
     BaseUserManager,
 )
 from django.utils.translation import gettext_lazy as _
-from django.core.validators import RegexValidator
+# from django.core.validators import RegexValidator
 
-phone_validator = RegexValidator(
-    regex=r"\A09[0-9]{9}\Z",
-    message="phone number must start with 09 and have 11 digits(en)",
-)
+# phone_validator = RegexValidator(
+#     regex=r"\A09[0-9]{9}\Z",
+#     message="phone number must start with 09 and have 11 digits(en)",
+# )
 
 
 class CustomUserManager(BaseUserManager):
@@ -20,42 +20,46 @@ class CustomUserManager(BaseUserManager):
     for authentication instead of usernames.
     """
 
-    def create_user(self, phone, password, **extra_fields):
-        if not phone:
-            raise ValueError(_("The Phone number must be set or invalid"))
+    def create_user(self, email, password, **extra_fields):
+        # if not phone:
+        #     raise ValueError(_("The Phone number must be set or invalid"))
 
-        phone_validator(phone)
+        # phone_validator(phone)
 
-        if extra_fields.get("email"):
-            extra_fields["email"] = self.normalize_email(extra_fields["email"])
-
-        user = self.model(phone=phone, **extra_fields)
+        # if extra_fields.get("email"):
+        #     extra_fields["email"] = self.normalize_email(extra_fields["email"])
+        if not email:
+            raise ValueError(_("the Email must be set"))
+        
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save()
 
         return user
 
-    def create_superuser(self, phone, password, **extra_fields):
+    def create_superuser(self, email, password, **extra_fields):
         """
         Create and save a SuperUser with the given email and password.
         """
-        phone_validator(phone)
+        # phone_validator(phone)
 
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
+        extra_fields.setdefault("is_verified", True)
 
         if extra_fields.get("is_staff") is not True:
             raise ValueError(_("Superuser must have is_staff=True."))
         if extra_fields.get("is_superuser") is not True:
             raise ValueError(_("Superuser must have is_superuser=True."))
-        return self.create_user(phone, password, **extra_fields)
+        return self.create_user(email, password, **extra_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
 
     phone = models.CharField(max_length=11, unique=True)
-    email = models.EmailField(max_length=255, unique=True, null=True, blank=True)
+    email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=100)
 
     is_host = models.BooleanField(default=False)
@@ -68,8 +72,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = CustomUserManager()
 
-    USERNAME_FIELD = "phone"
+    USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["name"]
 
     def __str__(self):
-        return f"{self.name}: {self.phone}"
+        return self.name
