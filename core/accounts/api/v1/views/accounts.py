@@ -25,20 +25,28 @@ class RegistrationView(generics.GenericAPIView):
 
         if serializer.is_valid():
             serializer.save()
-            phone = serializer.validated_data["phone"]
-            data = {"phone": phone}
-            user_obj = get_object_or_404(User, phone=phone)
+            email = serializer.validated_data["email"]
+            data = {"email": email}
+            user_obj = get_object_or_404(User, email=email)
             token = self.get_tokens_for_user(user_obj)
             email_obj = EmailMessage(
                 "email/activation_email.tpl",
                 {"token": token},
-                "9123456789",
-                to=[phone],
+                "admin@admin.com",
+                to=[email],
             )
 
             EmailThread(email_obj).start()
 
-            return Response(data, status=status.HTTP_201_CREATED)
+            return Response({'detail': {
+                '''a verification emil sended to your email pleas check your email\n
+                for booking or hosting a room please verify your account
+                ''',
+                # data
+                }
+            },
+            status=status.HTTP_201_CREATED
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get_tokens_for_user(self, user):
