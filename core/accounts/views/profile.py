@@ -1,6 +1,6 @@
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
+from django.views.generic.base import TemplateView
 
-@login_required
-def my_profile(request):
-    return render(request, "accounts/profile.html")
+class ProfileView(TemplateView):
+    template_name = 'accounts/profile.html'
+    
+

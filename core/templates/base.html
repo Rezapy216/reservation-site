@@ -21,25 +21,18 @@
         <li class="nav-item"><a class="nav-link" href="{% url 'rooms:room-list' %}">Rooms</a></li>
       </ul>
       <ul class="navbar-nav align-items-lg-center gap-lg-2">
-        {% if user.is_authenticated %}
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-person-circle"></i> {{ user.username }}</a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              {% comment %} <li><a class="dropdown-item" href="{% url 'my_bookings' %}">My bookings</a></li> {% endcomment %}
-              {% if user.is_staff %}<li><a class="dropdown-item" href="{% url 'accounts:my-profile' %}">My Profile</a></li>{% endif %}
-              <li><hr class="dropdown-divider"></li>
-              <li>
-                <!-- Django 5+: logout must be POST -->
-                {% comment %} <form method="post" action="{% url 'logout' %}">{% csrf_token %} {% endcomment %}
-                  <button class="dropdown-item" type="submit">Logout</button>
-                </form>
-              </li>
-            </ul>
-          </li>
-        {% else %}
-          <li class="nav-item"><a class="btn btn-outline-light btn-sm" href="{% url 'accounts:login' %}">Login</a></li>
-          <li class="nav-item"><a class="btn btn-light btn-sm" href="{% url 'accounts:register' %}">Register</a></li>
-        {% endif %}
+        {# Navbar is driven by the JWT in localStorage (see initNav in api.js) #}
+        <li class="nav-item dropdown js-auth-only d-none">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-person-circle"></i> <span class="js-username"></span></a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="/bookings/my-bookings/">My bookings</a></li>
+            <li><a class="dropdown-item" href="{% url 'accounts:my-profile'  %}">My Profile</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item js-logout" href="#">Logout</a></li>
+          </ul>
+        </li>
+        <li class="nav-item js-guest-only d-none"><a class="btn btn-outline-light btn-sm" href="{% url 'accounts:login' %}">Login</a></li>
+        <li class="nav-item js-guest-only d-none"><a class="btn btn-light btn-sm" href="{% url 'accounts:register' %}">Register</a></li>
       </ul>
     </div>
   </div>
@@ -65,6 +58,8 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="{% static 'js/api.js' %}"></script>
 <script src="{% static 'js/main.js' %}"></script>
 {% block scripts %}{% endblock %}
 </body>

@@ -10,7 +10,11 @@ from mail_templated import EmailMessage
 from jwt import ExpiredSignatureError, InvalidSignatureError
 
 from ...utils import EmailThread
-from ..serializers import RegistrationSerializer, ChangePasswordSerializer
+from ..serializers import (
+    RegistrationSerializer,
+    ChangePasswordSerializer,
+    ActivationResendSerializer
+)
 
 import jwt
 
@@ -21,6 +25,7 @@ class RegistrationView(generics.GenericAPIView):
     serializer_class = RegistrationSerializer
 
     def post(self, request, *args, **kwargs):
+
         serializer = RegistrationSerializer(data=request.data)
 
         if serializer.is_valid():
@@ -86,6 +91,8 @@ class ChangePasswordApiView(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+
 class ActivationApiView(views.APIView):
 
     def get(self, request, token, *args, **kwargs):
@@ -113,6 +120,35 @@ class ActivationApiView(views.APIView):
             return Response({"details": "user is already verified"})
 
         return Response({"confirmed": token})
+
+
+class ActivationResendApiView(generics.GenericAPIView):
+    
+    serializer_class = ActivationResendSerializer
+    
+    def post(self, request, *args, **kwargs):
+        
+        serializer = ActivationResendSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user_obj = serializer.validated_data['user']
+        token = self.get_token_for_user(user_obj)
+        email_obj = EmailMessage(
+            'email/activation_email.tpl',
+            {'token': token},
+            '9123456789',
+            to=[user_obj.phone],    
+        ) 
+        
+        EmailThread(email_obj).start()
+        return Response(
+            {"details": "user activation resend successfully"},
+            status=status.HTTP_200_OK,
+        )
+     
+        
+    def get_token_for_user(self, user):
+        refresh = RefreshToken.for_user(user)
+        return str(refresh.access_token)
 
 
 class TestSendEmail(generics.GenericAPIView):

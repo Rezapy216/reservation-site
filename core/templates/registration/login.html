@@ -45,7 +45,7 @@ $(function () {
       localStorage.setItem('rs_access', res.access);
       localStorage.setItem('rs_refresh', res.refresh);
       localStorage.setItem('rs_user', $('input[name=phone]').val());
-      window.location.href = '/';
+      {% comment %} window.location.href = '/'; {% endcomment %}
     })
     .fail(function (xhr) {
       var text = 'شماره یا رمز اشتباه است.';

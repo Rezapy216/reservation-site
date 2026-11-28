@@ -12,4 +12,9 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
+<<<<<<< HEAD
         fields = ("id", "name", "phone", "email")
+=======
+        fields = ("id", "name", "phone", "is_verified")
+        read_only_fields = ("is_verified",)
+>>>>>>> 70242492fe5cf84f0b2fdcb1ae6c9c811d86ff73

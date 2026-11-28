@@ -39,6 +39,7 @@
     refresh:  '/accounts/api/v1/jwt/refresh/',
     register: '/accounts/api/v1/registration/',
     profile:  '/accounts/api/v1/profile/',
+    verify:   '/accounts/api/v1/activation/verify/',   // TODO: set to your real endpoint
     rooms:    '/api/v1/room/',
     bookings: '/bookings/api/v1/booking/'
   };
@@ -362,8 +363,10 @@
       }).join('') || '<div class="col-12 text-muted">No facilities listed.</div>');
       // feed main.js price calculator
       $('#priceCard').attr('data-price', room.pay_per_night).data('price', room.pay_per_night);
-      if (typeof window.updatePrice === 'function') window.updatePrice();
       $root.find('.js-reserve').attr('href', '/bookings/booking/' + room.id + '/create/');
+      // main.js may be missing or throw; never let it break the rest of the page
+      try { if (typeof window.updatePrice === 'function') window.updatePrice(); }
+      catch (err) { if (window.console) console.error('updatePrice failed', err); }
     }).fail(handleFail);
   }
 
@@ -443,6 +446,7 @@
         url: API.login, method: 'POST',
         data: { phone: $f.find('[name=phone]').val(), password: $f.find('[name=password]').val() }
       }).done(function (data) {
+        Auth.clear();   // remove the previous user's tokens first
         Auth.save(data);
         window.location.href = getParam('next') || PAGES.home;
       }).fail(function (xhr) {
@@ -471,9 +475,39 @@
     });
   }
 
+  // verify page: send phone, backend emails a verification link
+  function initVerify() {
+    var $f = $('#verifyForm');
+    if (!$f.length || !requireLogin()) return;
+    // already verified -> go to profile
+    request({ url: API.profile }).done(function (u) {
+      if (u && [u, u.user, u.profile, u.data].some(function (o) { return o && (o.is_verified === true || o.verified === true || o.is_verify === true); })) window.location.href = '/accounts/my-profile/';
+    }).fail(function (xhr) {
+      if (xhr.status === 401) { Auth.clear(); requireLogin(); }
+    });
+    $f.on('submit', function (e) {
+      e.preventDefault();
+      var $btn = $f.find('button[type=submit]').prop('disabled', true);
+      request({ url: API.verify, method: 'POST', data: { phone: $.trim($('#phone').val()) } })
+        .done(function (d) {
+          alertBox('success', (d && (d.detail || d.message)) || 'Verification email sent. Check your inbox.');
+          $btn.prop('disabled', false);
+        })
+        .fail(function (xhr) {
+          if (xhr.status === 401) { Auth.clear(); requireLogin(); return; }
+          alertBox('danger', errorText(xhr)); $btn.prop('disabled', false);
+        });
+    });
+  }
+
   // navbar: logout + show username if logged in via JWT
   function initNav() {
     $(document).on('click', '.js-logout', function (e) { e.preventDefault(); Auth.logout(); });
+    var logged = Auth.isLoggedIn();
+    $('.js-auth-only').toggleClass('d-none', !logged);
+    $('.js-guest-only').toggleClass('d-none', logged);
+    var u = Auth.user();
+    if (logged) $('.js-username').text(u && u.phone ? u.phone : 'Account');
   }
 
   // ---------------------------------------------------------------- boot
@@ -486,6 +520,7 @@
     initMyBookings();
     initLogin();
     initRegister();
+    initVerify();
   });
 
   // expose for console / other scripts
