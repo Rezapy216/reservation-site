@@ -15,6 +15,7 @@ urlpatterns = [
         views.ActivationApiView.as_view(),
         name="activation",
     ),
+    path('activation/verify/', views.ActivationResendApiView.as_view(), name='verify'),
     # path("activation/resend/",views.ActivationResendApiView.as_view(),name="activation-resend"),
     path(
         "change-password", views.ChangePasswordApiView.as_view(), name="change-password"
